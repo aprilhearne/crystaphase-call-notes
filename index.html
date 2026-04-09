@@ -599,7 +599,7 @@
       </button>
       <div class="audio-info">
         <div class="label" id="recordLabel">Tap to record a voice memo</div>
-        <div class="sub">Audio will be sent to Claude for processing</div>
+        <div class="sub">Voice will be transcribed and added to your notes</div>
       </div>
       <div class="record-timer" id="recordTimer">0:00</div>
     </div>
@@ -681,6 +681,8 @@ RULES:
   let audioBlob = null;
   let recordingInterval = null;
   let recordingSeconds = 0;
+  let speechRecognition = null;
+  let transcriptText = '';
   let uploadedFiles = [];
 
   // ============ INIT ============
@@ -702,22 +704,76 @@ RULES:
     reportType = btn.dataset.type;
   }
 
-  // ============ AUDIO ============
+  // ============ AUDIO (with live transcription) ============
   async function toggleRecording() {
     const btn = document.getElementById('recordBtn');
     const label = document.getElementById('recordLabel');
 
     if (mediaRecorder && mediaRecorder.state === 'recording') {
       mediaRecorder.stop();
+      if (speechRecognition) speechRecognition.stop();
       btn.classList.remove('recording');
-      label.textContent = 'Recording saved';
       clearInterval(recordingInterval);
+      // Append transcript to notes field
+      if (transcriptText.trim()) {
+        const notes = document.getElementById('notesText');
+        const separator = notes.value.trim() ? '\n\n--- VOICE MEMO TRANSCRIPT ---\n' : '';
+        notes.value += separator + transcriptText.trim();
+        label.textContent = 'Transcript added to notes';
+      } else {
+        label.textContent = 'No speech detected — try again';
+      }
+      return;
+    }
+
+    // Check for Speech Recognition support
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      label.textContent = 'Speech recognition not supported in this browser. Use Chrome or Safari.';
       return;
     }
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       audioChunks = [];
+      transcriptText = '';
+
+      // Set up speech recognition
+      speechRecognition = new SpeechRecognition();
+      speechRecognition.continuous = true;
+      speechRecognition.interimResults = true;
+      speechRecognition.lang = 'en-US';
+
+      let finalTranscript = '';
+      speechRecognition.onresult = (event) => {
+        let interim = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript + ' ';
+          } else {
+            interim += event.results[i][0].transcript;
+          }
+        }
+        transcriptText = finalTranscript + interim;
+        label.textContent = transcriptText.slice(-60) || 'Listening...';
+      };
+
+      speechRecognition.onerror = (event) => {
+        if (event.error !== 'aborted') {
+          label.textContent = 'Speech error: ' + event.error;
+        }
+      };
+
+      speechRecognition.onend = () => {
+        // Restart if still recording (speech recognition auto-stops)
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+          try { speechRecognition.start(); } catch(e) {}
+        }
+      };
+
+      speechRecognition.start();
+
+      // Set up media recorder (for playback)
       mediaRecorder = new MediaRecorder(stream);
       mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
       mediaRecorder.onstop = () => {
@@ -729,7 +785,7 @@ RULES:
       };
       mediaRecorder.start();
       btn.classList.add('recording');
-      label.textContent = 'Recording... tap to stop';
+      label.textContent = 'Listening...';
       recordingSeconds = 0;
       updateTimer();
       recordingInterval = setInterval(() => { recordingSeconds++; updateTimer(); }, 1000);
@@ -805,15 +861,6 @@ RULES:
         mainText += `--- RAW NOTES ---\n${notesText}\n\n`;
       }
       contentBlocks.push({ type: 'text', text: mainText });
-
-      // Audio note
-      if (audioBlob) {
-        statusText.textContent = 'Processing audio...';
-        contentBlocks.push({
-          type: 'text',
-          text: '--- AUDIO NOTE ---\nAn audio recording was attached. Note: The Claude Messages API cannot directly process audio. Please work with the text notes and file contents provided. If the user typed a transcript or summary alongside the audio, use that.\n'
-        });
-      }
 
       // Files
       if (uploadedFiles.length > 0) {
