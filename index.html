@@ -67,6 +67,12 @@
     margin: 0 auto;
   }
 
+  .header-logo {
+    height: 48px;
+    filter: brightness(0) invert(1);
+    margin-bottom: 0.75rem;
+  }
+
   .header h1 {
     font-size: clamp(1.5rem, 4vw, 2.2rem);
     font-weight: 800;
@@ -78,6 +84,9 @@
     font-size: 0.95rem;
     opacity: 0.7;
     font-weight: 500;
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.5;
   }
 
   /* ── MAIN CONTAINER ── */
@@ -547,8 +556,9 @@
 <!-- HEADER -->
 <div class="header">
   <div class="header-content">
+    <img src="https://crystaphase.com/wp-content/themes/theme-developer/assets/images/logo.svg" alt="Crystaphase" class="header-logo">
     <h1>Call Note Generator</h1>
-    <p>Create professional call notes and visit reports</p>
+    <p>Upload your context and notes and a call note or visit report will be generated for you.</p>
   </div>
 </div>
 
@@ -642,9 +652,7 @@
   const MODEL = 'claude-sonnet-4-20250514';
   const SYSTEM_PROMPT = `You are a technical sales assistant at Crystaphase, a world leader in reactor performance solutions for the hydroprocessing industry. Crystaphase products include CatTrap, ActiPhase, Precision Rings, and HeavyTrap.
 
-Your job is to take raw notes (text, transcribed audio, or file contents) from a sales engineer's customer call or site visit and produce a clean, professional call note or visit report.
-
-You must EXTRACT all relevant details from the raw notes — customer name, unit, author, products, dates, dollar amounts, probabilities, etc. Do not ask for more information; work with what is provided and mark anything missing as "TBD".
+Your job is to take raw notes (text, transcribed audio, or file contents) from a sales engineer's customer call or site visit and produce ONLY the narrative portion of a call note or visit report. The salesperson will copy this narrative and paste it into the CRM, where they will separately fill in structured fields (products, opportunity value, probability, dates, occurrence, etc.).
 
 FORMAT THE OUTPUT EXACTLY LIKE THIS:
 
@@ -655,19 +663,11 @@ FORMAT THE OUTPUT EXACTLY LIKE THIS:
 
 [If there are clear action items, list them under "Action Items:"]
 
-Current unit trimester: [value or TBD]
-Products: [value or TBD]
-Opportunity value (unfactored): US $[value or TBD]
-Probability: [value]%
-Opportunity value (factored): US $[calculated as unfactored × probability/100, or TBD]
-On-site date: [value or TBD]
-Occurrence: [Repeat or New]
-
 RULES:
-- Extract ALL structured field values from the raw notes — look for any mention of dollar amounts, percentages, dates, product names, customer names, unit identifiers
+- Output ONLY the subject line, narrative paragraphs, and action items. Do NOT include any structured footer fields (Products, Opportunity value, Probability, On-site date, Occurrence, trimester, etc.) — those are entered separately in the CRM.
+- Do not mark anything as "TBD" — if information is missing, simply omit it.
 - Write in a professional but conversational tone
 - Preserve all technical details, product names, customer names, and dollar amounts exactly as provided
-- Calculate the factored opportunity value as unfactored × (probability / 100)
 - Keep the narrative concise — typically 1-3 paragraphs
 - Highlight any wins, competitive threats, or urgent action items
 - Use the author's perspective (third person)
