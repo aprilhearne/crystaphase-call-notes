@@ -4,259 +4,257 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Crystaphase | Call Note & Visit Report Generator</title>
+<link rel="icon" href="https://crystaphase.com/favicon.ico" type="image/x-icon">
 <style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
   :root {
-    --navy: #0B1D3A;
-    --navy-light: #132D54;
-    --blue-accent: #1B6EC2;
-    --blue-bright: #3A9BF5;
-    --teal: #00A4A6;
-    --white: #FFFFFF;
-    --gray-50: #F8F9FB;
-    --gray-100: #EEF1F5;
-    --gray-200: #D8DDE6;
-    --gray-400: #8A94A6;
-    --gray-600: #4A5568;
-    --gray-800: #2D3748;
-    --red: #E53E3E;
-    --green: #38A169;
-    --orange: #ED8936;
+    --brand-green: #50BFA1;
+    --brand-green-dark: #004E3C;
+    --brand-blue: #0F6694;
+    --brand-blue-light: #4DBFD7;
+    --brand-gold: #EFBB65;
+    --brand-coral: #D86B55;
+    --text-primary: #000000;
+    --text-secondary: #797979;
+    --neutral-light: #D1D2D4;
+    --neutral-lightest: #F2F2F2;
+    --bg-page: #F2F2F2;
+    --bg-card: #ffffff;
+    --shadow-sm: 0 2px 8px rgba(0, 78, 60, 0.08);
+    --shadow-md: 0 8px 24px rgba(0, 78, 60, 0.12);
+    --shadow-lg: 0 16px 48px rgba(0, 78, 60, 0.18);
+    --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --radius: 12px;
-    --shadow: 0 2px 12px rgba(11,29,58,0.08);
-    --shadow-lg: 0 8px 30px rgba(11,29,58,0.12);
+    --red: #E53E3E;
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
   body {
-    font-family: 'Avenir Next', 'Avenir', 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    background: var(--gray-50);
-    color: var(--gray-800);
+    font-family: 'Avenir Next LT Pro', 'Avenir Next', 'Avenir', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-page);
+    color: var(--text-primary);
+    line-height: 1.6;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
   }
 
-  /* HEADER */
+  /* ── HEADER ── */
   .header {
-    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 16px rgba(11,29,58,0.2);
-  }
-
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .logo-mark {
-    width: 36px;
-    height: 36px;
-    background: linear-gradient(135deg, var(--teal), var(--blue-bright));
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
+    background: linear-gradient(135deg, var(--brand-green-dark) 0%, #003a2d 100%);
     color: white;
-    font-size: 18px;
-    letter-spacing: -1px;
+    text-align: center;
+    padding: 2.5rem 1.5rem 2rem;
+    position: relative;
+    overflow: hidden;
   }
 
-  .header-title {
-    color: var(--white);
-    font-size: 18px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 30% 50%, rgba(80,191,161,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 20%, rgba(77,191,215,0.08) 0%, transparent 50%);
+    pointer-events: none;
   }
 
-  .header-subtitle {
-    color: var(--gray-400);
-    font-size: 11px;
+  .header-content {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .header h1 {
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 0.25rem;
+  }
+
+  .header p {
+    font-size: 0.95rem;
+    opacity: 0.7;
     font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 1px;
   }
 
-  .settings-btn {
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.15);
-    color: var(--white);
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: inherit;
-  }
-  .settings-btn:hover { background: rgba(255,255,255,0.18); }
-
-  /* MAIN CONTAINER */
+  /* ── MAIN CONTAINER ── */
   .container {
     max-width: 680px;
     margin: 0 auto;
-    padding: 20px 16px 100px;
+    padding: 24px 16px 100px;
   }
 
-  /* CARDS */
+  /* ── CARDS ── */
   .card {
-    background: var(--white);
+    background: var(--bg-card);
     border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    padding: 24px;
     margin-bottom: 16px;
-    border: 1px solid var(--gray-100);
+    transition: box-shadow var(--transition);
+  }
+
+  .card:hover {
+    box-shadow: var(--shadow-md);
   }
 
   .card-title {
     font-size: 14px;
-    font-weight: 600;
-    color: var(--navy);
-    margin-bottom: 12px;
+    font-weight: 700;
+    color: var(--brand-green-dark);
+    margin-bottom: 14px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
   }
 
   .card-title .icon {
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 15px;
     flex-shrink: 0;
   }
 
-  /* REPORT TYPE TOGGLE */
+  /* ── REPORT TYPE TOGGLE ── */
   .toggle-group {
     display: flex;
-    background: var(--gray-100);
+    background: var(--neutral-lightest);
     border-radius: 10px;
-    padding: 3px;
-    gap: 3px;
+    padding: 4px;
+    gap: 4px;
   }
 
   .toggle-btn {
     flex: 1;
-    padding: 10px 16px;
+    padding: 11px 16px;
     border: none;
     border-radius: 8px;
     font-family: inherit;
     font-size: 14px;
     font-weight: 500;
-    color: var(--gray-600);
+    color: var(--text-secondary);
     background: transparent;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition);
   }
 
   .toggle-btn.active {
-    background: var(--white);
-    color: var(--navy);
-    box-shadow: 0 1px 4px rgba(11,29,58,0.1);
-    font-weight: 600;
+    background: var(--bg-card);
+    color: var(--brand-green-dark);
+    box-shadow: var(--shadow-sm);
+    font-weight: 700;
   }
 
-  /* FORM FIELDS */
-  .field { margin-bottom: 14px; }
+  /* ── FORM FIELDS ── */
+  .field { margin-bottom: 16px; }
 
   .field label {
     display: block;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--gray-600);
-    margin-bottom: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
   }
 
   .field input, .field select, .field textarea {
     width: 100%;
-    padding: 10px 14px;
-    border: 1.5px solid var(--gray-200);
-    border-radius: 8px;
+    padding: 12px 16px;
+    border: 2px solid var(--neutral-light);
+    border-radius: 10px;
     font-family: inherit;
     font-size: 15px;
-    color: var(--gray-800);
-    background: var(--white);
-    transition: border-color 0.2s;
+    color: var(--text-primary);
+    background: var(--bg-card);
+    transition: border-color var(--transition), box-shadow var(--transition);
     -webkit-appearance: none;
   }
 
   .field input:focus, .field select:focus, .field textarea:focus {
     outline: none;
-    border-color: var(--blue-accent);
-    box-shadow: 0 0 0 3px rgba(27,110,194,0.1);
+    border-color: var(--brand-green);
+    box-shadow: 0 0 0 4px rgba(80, 191, 161, 0.15);
   }
 
   .field textarea {
     min-height: 180px;
     resize: vertical;
-    line-height: 1.6;
+    line-height: 1.7;
   }
 
-  /* SECTION DIVIDER */
+  /* ── SECTION DIVIDER ── */
   .section-divider {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin: 6px 0 14px;
+    margin: 8px 0 16px;
     font-size: 11px;
-    font-weight: 600;
-    color: var(--gray-400);
+    font-weight: 700;
+    color: var(--neutral-light);
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
   }
   .section-divider::before, .section-divider::after {
     content: '';
     flex: 1;
     height: 1px;
-    background: var(--gray-200);
+    background: var(--neutral-light);
   }
 
-  /* AUDIO RECORDER */
+  /* ── AUDIO RECORDER ── */
   .audio-row {
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 14px 16px;
-    background: var(--gray-50);
+    padding: 16px;
+    background: var(--neutral-lightest);
     border-radius: 10px;
-    border: 1.5px solid var(--gray-100);
+    border: 2px solid transparent;
+    transition: border-color var(--transition);
+  }
+
+  .audio-row:has(.record-btn.recording) {
+    border-color: var(--brand-coral);
   }
 
   .record-btn {
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    border: 3px solid var(--gray-200);
-    background: var(--white);
+    border: 3px solid var(--neutral-light);
+    background: var(--bg-card);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
+    transition: all var(--transition);
     flex-shrink: 0;
+  }
+
+  .record-btn:hover {
+    border-color: var(--brand-coral);
   }
 
   .record-btn .dot {
     width: 20px;
     height: 20px;
-    background: var(--red);
+    background: var(--brand-coral);
     border-radius: 50%;
-    transition: all 0.2s;
+    transition: all var(--transition);
   }
 
   .record-btn.recording {
-    border-color: var(--red);
+    border-color: var(--brand-coral);
     animation: pulse 1.5s infinite;
   }
 
@@ -267,31 +265,28 @@
   }
 
   @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(229,62,62,0.3); }
-    50% { box-shadow: 0 0 0 10px rgba(229,62,62,0); }
+    0%, 100% { box-shadow: 0 0 0 0 rgba(216, 107, 85, 0.3); }
+    50% { box-shadow: 0 0 0 12px rgba(216, 107, 85, 0); }
   }
 
-  .audio-info {
-    flex: 1;
-    min-width: 0;
-  }
+  .audio-info { flex: 1; min-width: 0; }
 
   .audio-info .label {
     font-size: 13px;
     font-weight: 600;
-    color: var(--gray-800);
+    color: var(--text-primary);
   }
 
   .audio-info .sub {
     font-size: 12px;
-    color: var(--gray-400);
+    color: var(--text-secondary);
     margin-top: 2px;
   }
 
   .record-timer {
     font-size: 20px;
-    font-weight: 600;
-    color: var(--navy);
+    font-weight: 700;
+    color: var(--brand-green-dark);
     font-variant-numeric: tabular-nums;
     flex-shrink: 0;
   }
@@ -303,52 +298,51 @@
     gap: 8px;
   }
 
-  .audio-playback audio {
-    flex: 1;
-    height: 36px;
-  }
+  .audio-playback audio { flex: 1; height: 36px; }
 
   .clear-audio-btn {
     font-size: 12px;
-    color: var(--red);
+    color: var(--brand-coral);
     background: none;
     border: none;
     cursor: pointer;
     font-family: inherit;
-    padding: 4px 8px;
-    border-radius: 4px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: background var(--transition);
     flex-shrink: 0;
   }
-  .clear-audio-btn:hover { background: rgba(229,62,62,0.06); }
+  .clear-audio-btn:hover { background: rgba(216, 107, 85, 0.08); }
 
-  /* FILE UPLOAD */
+  /* ── FILE UPLOAD ── */
   .drop-zone {
-    border: 2px dashed var(--gray-200);
+    border: 2px dashed var(--neutral-light);
     border-radius: 10px;
-    padding: 20px;
+    padding: 24px;
     text-align: center;
     cursor: pointer;
-    transition: all 0.2s;
-    background: var(--gray-50);
+    transition: all var(--transition);
+    background: var(--neutral-lightest);
   }
 
   .drop-zone:hover, .drop-zone.drag-over {
-    border-color: var(--blue-accent);
-    background: rgba(27,110,194,0.03);
+    border-color: var(--brand-green);
+    background: rgba(80, 191, 161, 0.04);
   }
 
-  .drop-zone .upload-icon { font-size: 24px; margin-bottom: 6px; }
+  .drop-zone .upload-icon { font-size: 28px; margin-bottom: 6px; }
 
   .drop-zone p {
     font-size: 13px;
-    color: var(--gray-600);
+    color: var(--text-secondary);
     font-weight: 500;
   }
 
   .drop-zone .hint {
     font-size: 11px;
-    color: var(--gray-400);
-    margin-top: 3px;
+    color: var(--neutral-light);
+    margin-top: 4px;
   }
 
   .file-list {
@@ -362,14 +356,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 12px;
-    background: var(--gray-50);
+    padding: 10px 14px;
+    background: var(--neutral-lightest);
     border-radius: 8px;
     font-size: 13px;
   }
 
   .file-item .name {
-    color: var(--gray-800);
+    color: var(--text-primary);
     font-weight: 500;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -385,47 +379,49 @@
   }
 
   .file-item .size {
-    color: var(--gray-400);
+    color: var(--text-secondary);
     font-size: 11px;
   }
 
   .file-item .remove-file {
     background: none;
     border: none;
-    color: var(--gray-400);
+    color: var(--text-secondary);
     cursor: pointer;
     font-size: 15px;
     padding: 2px 6px;
     border-radius: 4px;
+    transition: color var(--transition);
   }
-  .file-item .remove-file:hover { color: var(--red); }
+  .file-item .remove-file:hover { color: var(--brand-coral); }
 
-  /* GENERATE BUTTON */
+  /* ── GENERATE BUTTON ── */
   .generate-btn {
     width: 100%;
     padding: 16px;
-    background: linear-gradient(135deg, var(--navy) 0%, var(--blue-accent) 100%);
-    color: var(--white);
+    background: linear-gradient(135deg, var(--brand-green-dark) 0%, var(--brand-green) 100%);
+    color: white;
     border: none;
     border-radius: var(--radius);
     font-family: inherit;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 4px 14px rgba(11,29,58,0.25);
+    transition: all var(--transition);
+    box-shadow: 0 4px 16px rgba(0, 78, 60, 0.25);
     letter-spacing: 0.3px;
+    text-transform: uppercase;
   }
 
   .generate-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(11,29,58,0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 78, 60, 0.3);
   }
 
   .generate-btn:active { transform: translateY(0); }
 
   .generate-btn:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
     transform: none;
   }
@@ -444,28 +440,35 @@
 
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* OUTPUT */
+  /* ── OUTPUT ── */
   .output-card {
-    background: var(--white);
+    background: var(--bg-card);
     border-radius: var(--radius);
     box-shadow: var(--shadow-lg);
-    border: 1px solid var(--gray-100);
     overflow: hidden;
-    margin-top: 16px;
+    margin-top: 20px;
+    animation: fadeInUp 0.4s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   .output-header {
-    background: linear-gradient(135deg, var(--navy), var(--navy-light));
-    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--brand-green-dark), #003a2d);
+    padding: 18px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
 
   .output-header h3 {
-    color: var(--white);
+    color: white;
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
   }
 
   .output-actions {
@@ -477,185 +480,85 @@
     background: rgba(255,255,255,0.12);
     border: 1px solid rgba(255,255,255,0.2);
     color: white;
-    padding: 6px 14px;
-    border-radius: 6px;
+    padding: 7px 16px;
+    border-radius: 8px;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     font-family: inherit;
-    transition: all 0.2s;
+    transition: all var(--transition);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   .output-actions button:hover { background: rgba(255,255,255,0.22); }
 
   .output-body {
-    padding: 20px;
+    padding: 24px;
     font-size: 14px;
-    line-height: 1.7;
-    color: var(--gray-800);
+    line-height: 1.8;
+    color: var(--text-primary);
     white-space: pre-wrap;
     max-height: 600px;
     overflow-y: auto;
   }
 
-  /* SETTINGS MODAL */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(11,29,58,0.5);
-    z-index: 200;
-    align-items: flex-end;
-    justify-content: center;
-    backdrop-filter: blur(4px);
-  }
-
-  .modal-overlay.active { display: flex; }
-
-  .modal {
-    background: var(--white);
-    border-radius: 20px 20px 0 0;
-    width: 100%;
-    max-width: 680px;
-    max-height: 85vh;
-    overflow-y: auto;
-    padding: 24px 20px 40px;
-    animation: slideUp 0.3s ease-out;
-  }
-
-  @keyframes slideUp {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
-  }
-
-  .modal-handle {
-    width: 40px;
-    height: 4px;
-    background: var(--gray-200);
-    border-radius: 2px;
-    margin: 0 auto 20px;
-  }
-
-  .modal h2 {
-    font-size: 18px;
-    color: var(--navy);
-    margin-bottom: 16px;
-  }
-
-  .modal .field textarea {
-    min-height: 200px;
-    font-size: 13px;
-  }
-
-  .modal-footer {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-  }
-
-  .modal-footer button {
-    flex: 1;
-    padding: 12px;
-    border-radius: 10px;
-    font-family: inherit;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-  }
-
-  .btn-secondary { background: var(--gray-100); color: var(--gray-600); }
-  .btn-primary { background: var(--navy); color: var(--white); }
-
-  /* STATUS BAR */
+  /* ── STATUS BAR ── */
   .status-bar {
     display: none;
     align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    background: rgba(27,110,194,0.06);
-    border-radius: 8px;
-    margin-bottom: 12px;
+    gap: 10px;
+    padding: 12px 16px;
+    background: rgba(80, 191, 161, 0.08);
+    border-radius: 10px;
+    margin-bottom: 14px;
     font-size: 13px;
-    color: var(--blue-accent);
-    font-weight: 500;
+    color: var(--brand-green-dark);
+    font-weight: 600;
   }
   .status-bar.active { display: flex; }
-  .status-bar.error { background: rgba(229,62,62,0.06); color: var(--red); }
-  .status-bar.success { background: rgba(56,161,105,0.06); color: var(--green); }
+  .status-bar.error { background: rgba(216, 107, 85, 0.08); color: var(--brand-coral); }
+  .status-bar.success { background: rgba(80, 191, 161, 0.08); color: var(--brand-green-dark); }
 
   .status-spinner {
     width: 14px;
     height: 14px;
-    border: 2px solid rgba(27,110,194,0.3);
-    border-top-color: var(--blue-accent);
+    border: 2px solid rgba(80, 191, 161, 0.3);
+    border-top-color: var(--brand-green);
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
     flex-shrink: 0;
   }
 
-  /* PROXY STATUS */
-  .api-key-display {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    background: var(--gray-50);
-    border-radius: 8px;
-    margin-bottom: 14px;
-    font-size: 12px;
-    color: var(--gray-400);
-  }
-
-  .dot-indicator {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-  .dot-indicator.connected { background: var(--green); }
-  .dot-indicator.disconnected { background: var(--orange); }
-
-  /* Responsive */
+  /* ── RESPONSIVE ── */
   @media (max-width: 480px) {
-    .container { padding: 12px 10px 100px; }
-    .card { padding: 16px; }
-    .header-title { font-size: 16px; }
+    .container { padding: 16px 12px 100px; }
+    .card { padding: 20px; }
+    .header { padding: 2rem 1rem 1.5rem; }
   }
 
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb { background: var(--neutral-light); border-radius: 3px; }
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
 <div class="header">
-  <div class="header-left">
-    <div class="logo-mark">C</div>
-    <div>
-      <div class="header-title">Crystaphase</div>
-      <div class="header-subtitle">Call Note Generator</div>
-    </div>
+  <div class="header-content">
+    <h1>Call Note Generator</h1>
+    <p>Create professional call notes and visit reports</p>
   </div>
-  <button class="settings-btn" onclick="openSettings()">Settings</button>
 </div>
 
 <!-- MAIN -->
 <div class="container">
 
-  <!-- Proxy Status -->
-  <div class="api-key-display" id="apiStatus">
-    <span class="dot-indicator connected" id="apiDot"></span>
-    <span id="apiStatusText">Connected to Crystaphase proxy</span>
-  </div>
-
   <!-- Report Type -->
   <div class="card">
     <div class="card-title">
-      <span class="icon" style="background:rgba(27,110,194,0.1);color:var(--blue-accent);">&#9998;</span>
+      <span class="icon" style="background:rgba(15,102,148,0.1);color:var(--brand-blue);">&#9998;</span>
       Report Type
     </div>
     <div class="toggle-group">
@@ -667,7 +570,7 @@
   <!-- ALL INPUTS IN ONE CARD -->
   <div class="card">
     <div class="card-title">
-      <span class="icon" style="background:rgba(0,164,166,0.1);color:var(--teal);">&#128172;</span>
+      <span class="icon" style="background:rgba(80,191,161,0.1);color:var(--brand-green);">&#128172;</span>
       Notes &amp; Context
     </div>
 
@@ -733,24 +636,11 @@
   </div>
 </div>
 
-<!-- SETTINGS MODAL -->
-<div class="modal-overlay" id="settingsModal">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <h2>Settings</h2>
-
-    <div class="field">
-      <label>Model</label>
-      <select id="modelSelect">
-        <option value="claude-sonnet-4-20250514">Claude Sonnet 4</option>
-        <option value="claude-opus-4-20250514">Claude Opus 4</option>
-        <option value="claude-haiku-3-5-20241022">Claude Haiku 3.5</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label>System Prompt (Customize how reports are generated)</label>
-      <textarea id="systemPrompt">You are a technical sales assistant at Crystaphase, a world leader in reactor performance solutions for the hydroprocessing industry. Crystaphase products include CatTrap, ActiPhase, Precision Rings, and HeavyTrap.
+<script>
+  // ============ CONFIG (edit these here, not exposed to end users) ============
+  const PROXY_URL = 'https://crystaphase-call-notes.aprilhea.workers.dev/';
+  const MODEL = 'claude-sonnet-4-20250514';
+  const SYSTEM_PROMPT = `You are a technical sales assistant at Crystaphase, a world leader in reactor performance solutions for the hydroprocessing industry. Crystaphase products include CatTrap, ActiPhase, Precision Rings, and HeavyTrap.
 
 Your job is to take raw notes (text, transcribed audio, or file contents) from a sales engineer's customer call or site visit and produce a clean, professional call note or visit report.
 
@@ -782,17 +672,8 @@ RULES:
 - Highlight any wins, competitive threats, or urgent action items
 - Use the author's perspective (third person)
 - Crystaphase products: CatTrap, ActiPhase, Precision Rings, HeavyTrap, HT10, PS66, PS99, DOS, TRANS
-- If the raw notes mention a competitor or lost opportunity, note it clearly</textarea>
-    </div>
+- If the raw notes mention a competitor or lost opportunity, note it clearly`;
 
-    <div class="modal-footer">
-      <button class="btn-secondary" onclick="closeSettings()">Cancel</button>
-      <button class="btn-primary" onclick="saveSettings()">Save</button>
-    </div>
-  </div>
-</div>
-
-<script>
   // ============ STATE ============
   let reportType = 'call';
   let mediaRecorder = null;
@@ -801,11 +682,9 @@ RULES:
   let recordingInterval = null;
   let recordingSeconds = 0;
   let uploadedFiles = [];
-  const PROXY_URL = 'https://crystaphase-call-notes.aprilhea.workers.dev/';
 
   // ============ INIT ============
   document.addEventListener('DOMContentLoaded', () => {
-    loadSettings();
     const dz = document.getElementById('dropZone');
     dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
     dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
@@ -815,26 +694,6 @@ RULES:
       handleFiles(e.dataTransfer.files);
     });
   });
-
-  // ============ SETTINGS ============
-  function loadSettings() {
-    const model = localStorage.getItem('cp_model') || 'claude-sonnet-4-20250514';
-    const prompt = localStorage.getItem('cp_system_prompt');
-    document.getElementById('modelSelect').value = model;
-    if (prompt) document.getElementById('systemPrompt').value = prompt;
-  }
-
-  function saveSettings() {
-    const model = document.getElementById('modelSelect').value;
-    const prompt = document.getElementById('systemPrompt').value;
-    localStorage.setItem('cp_model', model);
-    localStorage.setItem('cp_system_prompt', prompt);
-    closeSettings();
-  }
-
-  function openSettings() { document.getElementById('settingsModal').classList.add('active'); }
-  function closeSettings() { document.getElementById('settingsModal').classList.remove('active'); }
-  document.addEventListener('click', e => { if (e.target.id === 'settingsModal') closeSettings(); });
 
   // ============ REPORT TYPE ============
   function setReportType(btn) {
@@ -921,8 +780,6 @@ RULES:
 
   // ============ GENERATE ============
   async function generateReport() {
-    const proxyUrl = PROXY_URL;
-
     const notesText = document.getElementById('notesText').value.trim();
     if (!notesText && !audioBlob && uploadedFiles.length === 0) {
       alert('Please add some notes, record audio, or upload files before generating.');
@@ -976,20 +833,18 @@ RULES:
         }
       }
 
-      // Call Claude API
+      // Call proxy
       statusText.textContent = 'Claude is generating your report...';
-      const model = localStorage.getItem('cp_model') || 'claude-sonnet-4-20250514';
-      const systemPrompt = localStorage.getItem('cp_system_prompt') || document.getElementById('systemPrompt').value;
 
-      const response = await fetch(proxyUrl, {
+      const response = await fetch(PROXY_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: model,
+          model: MODEL,
           max_tokens: 2048,
-          system: systemPrompt,
+          system: SYSTEM_PROMPT,
           messages: [{ role: 'user', content: contentBlocks }]
         })
       });
@@ -1034,7 +889,6 @@ RULES:
 
   function emailOutput() {
     const text = document.getElementById('outputBody').textContent;
-    // Try to extract subject line from the output
     const firstLine = text.split('\n')[0].trim();
     const subject = encodeURIComponent(firstLine.startsWith('[') ? firstLine : `[${reportType === 'call' ? 'Call Note' : 'Visit Report'}]`);
     const body = encodeURIComponent(text);
