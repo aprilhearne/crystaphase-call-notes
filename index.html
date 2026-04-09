@@ -648,8 +648,8 @@
 
   <!-- Proxy Status -->
   <div class="api-key-display" id="apiStatus">
-    <span class="dot-indicator disconnected" id="apiDot"></span>
-    <span id="apiStatusText">No proxy URL set — tap Settings to configure</span>
+    <span class="dot-indicator connected" id="apiDot"></span>
+    <span id="apiStatusText">Connected to Crystaphase proxy</span>
   </div>
 
   <!-- Report Type -->
@@ -740,12 +740,6 @@
     <h2>Settings</h2>
 
     <div class="field">
-      <label>Proxy URL</label>
-      <input type="url" id="proxyUrlInput" placeholder="https://crystaphase-callnotes.yourname.workers.dev">
-      <p style="font-size:11px;color:var(--gray-400);margin-top:4px;">Your Cloudflare Worker URL. The API key is stored securely on the server.</p>
-    </div>
-
-    <div class="field">
       <label>Model</label>
       <select id="modelSelect">
         <option value="claude-sonnet-4-20250514">Claude Sonnet 4</option>
@@ -807,6 +801,7 @@ RULES:
   let recordingInterval = null;
   let recordingSeconds = 0;
   let uploadedFiles = [];
+  const PROXY_URL = 'https://crystaphase-call-notes.aprilhea.workers.dev/';
 
   // ============ INIT ============
   document.addEventListener('DOMContentLoaded', () => {
@@ -823,36 +818,18 @@ RULES:
 
   // ============ SETTINGS ============
   function loadSettings() {
-    const proxyUrl = localStorage.getItem('cp_proxy_url') || '';
     const model = localStorage.getItem('cp_model') || 'claude-sonnet-4-20250514';
     const prompt = localStorage.getItem('cp_system_prompt');
-    document.getElementById('proxyUrlInput').value = proxyUrl;
     document.getElementById('modelSelect').value = model;
     if (prompt) document.getElementById('systemPrompt').value = prompt;
-    updateProxyStatus(proxyUrl);
   }
 
   function saveSettings() {
-    const proxyUrl = document.getElementById('proxyUrlInput').value.trim();
     const model = document.getElementById('modelSelect').value;
     const prompt = document.getElementById('systemPrompt').value;
-    localStorage.setItem('cp_proxy_url', proxyUrl);
     localStorage.setItem('cp_model', model);
     localStorage.setItem('cp_system_prompt', prompt);
-    updateProxyStatus(proxyUrl);
     closeSettings();
-  }
-
-  function updateProxyStatus(url) {
-    const dot = document.getElementById('apiDot');
-    const text = document.getElementById('apiStatusText');
-    if (url && url.startsWith('https://')) {
-      dot.className = 'dot-indicator connected';
-      text.textContent = 'Proxy connected — ' + new URL(url).hostname;
-    } else {
-      dot.className = 'dot-indicator disconnected';
-      text.textContent = 'No proxy URL set — tap Settings to configure';
-    }
   }
 
   function openSettings() { document.getElementById('settingsModal').classList.add('active'); }
@@ -944,8 +921,7 @@ RULES:
 
   // ============ GENERATE ============
   async function generateReport() {
-    const proxyUrl = localStorage.getItem('cp_proxy_url');
-    if (!proxyUrl) { openSettings(); return; }
+    const proxyUrl = PROXY_URL;
 
     const notesText = document.getElementById('notesText').value.trim();
     if (!notesText && !audioBlob && uploadedFiles.length === 0) {
