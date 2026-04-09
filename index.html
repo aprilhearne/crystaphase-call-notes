@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Crystaphase | Call Note & Visit Report Generator</title>
+<style>
+  :root {
+    --navy: #0B1D3A;
+    --navy-light: #132D54;
+    --blue-accent: #1B6EC2;
+    --blue-bright: #3A9BF5;
+    --teal: #00A4A6;
+    --white: #FFFFFF;
+    --gray-50: #F8F9FB;
+    --gray-100: #EEF1F5;
+    --gray-200: #D8DDE6;
+    --gray-400: #8A94A6;
+    --gray-600: #4A5568;
+    --gray-800: #2D3748;
+    --red: #E53E3E;
+    --green: #38A169;
+    --orange: #ED8936;
+    --radius: 12px;
+    --shadow: 0 2px 12px rgba(11,29,58,0.08);
+    --shadow-lg: 0 8px 30px rgba(11,29,58,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Avenir Next', 'Avenir', 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-800);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 16px rgba(11,29,58,0.2);
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-mark {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--teal), var(--blue-bright));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: white;
+    font-size: 18px;
+    letter-spacing: -1px;
+  }
+
+  .header-title {
+    color: var(--white);
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .header-subtitle {
+    color: var(--gray-400);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .settings-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--white);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .settings-btn:hover { background: rgba(255,255,255,0.18); }
+
+  /* MAIN CONTAINER */
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 20px 16px 100px;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-bottom: 16px;
+    border: 1px solid var(--gray-100);
+  }
+
+  .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title .icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  /* REPORT TYPE TOGGLE */
+  .toggle-group {
+    display: flex;
+    background: var(--gray-100);
+    border-radius: 10px;
+    padding: 3px;
+    gap: 3px;
+  }
+
+  .toggle-btn {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .toggle-btn.active {
+    background: var(--white);
+    color: var(--navy);
+    box-shadow: 0 1px 4px rgba(11,29,58,0.1);
+    font-weight: 600;
+  }
+
+  /* FORM FIELDS */
+  .field { margin-bottom: 14px; }
+
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .field input, .field select, .field textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--gray-800);
+    background: var(--white);
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+
+  .field input:focus, .field select:focus, .field textarea:focus {
+    outline: none;
+    border-color: var(--blue-accent);
+    box-shadow: 0 0 0 3px rgba(27,110,194,0.1);
+  }
+
+  .field textarea {
+    min-height: 180px;
+    resize: vertical;
+    line-height: 1.6;
+  }
+
+  /* SECTION DIVIDER */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 6px 0 14px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-400);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .section-divider::before, .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gray-200);
+  }
+
+  /* AUDIO RECORDER */
+  .audio-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border-radius: 10px;
+    border: 1.5px solid var(--gray-100);
+  }
+
+  .record-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 3px solid var(--gray-200);
+    background: var(--white);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .record-btn .dot {
+    width: 20px;
+    height: 20px;
+    background: var(--red);
+    border-radius: 50%;
+    transition: all 0.2s;
+  }
+
+  .record-btn.recording {
+    border-color: var(--red);
+    animation: pulse 1.5s infinite;
+  }
+
+  .record-btn.recording .dot {
+    border-radius: 4px;
+    width: 16px;
+    height: 16px;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(229,62,62,0.3); }
+    50% { box-shadow: 0 0 0 10px rgba(229,62,62,0); }
+  }
+
+  .audio-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .audio-info .label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-800);
+  }
+
+  .audio-info .sub {
+    font-size: 12px;
+    color: var(--gray-400);
+    margin-top: 2px;
+  }
+
+  .record-timer {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--navy);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+
+  .audio-playback {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .audio-playback audio {
+    flex: 1;
+    height: 36px;
+  }
+
+  .clear-audio-btn {
+    font-size: 12px;
+    color: var(--red);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 4px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .clear-audio-btn:hover { background: rgba(229,62,62,0.06); }
+
+  /* FILE UPLOAD */
+  .drop-zone {
+    border: 2px dashed var(--gray-200);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--gray-50);
+  }
+
+  .drop-zone:hover, .drop-zone.drag-over {
+    border-color: var(--blue-accent);
+    background: rgba(27,110,194,0.03);
+  }
+
+  .drop-zone .upload-icon { font-size: 24px; margin-bottom: 6px; }
+
+  .drop-zone p {
+    font-size: 13px;
+    color: var(--gray-600);
+    font-weight: 500;
+  }
+
+  .drop-zone .hint {
+    font-size: 11px;
+    color: var(--gray-400);
+    margin-top: 3px;
+  }
+
+  .file-list {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--gray-50);
+    border-radius: 8px;
+    font-size: 13px;
+  }
+
+  .file-item .name {
+    color: var(--gray-800);
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 220px;
+  }
+
+  .file-item .meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .file-item .size {
+    color: var(--gray-400);
+    font-size: 11px;
+  }
+
+  .file-item .remove-file {
+    background: none;
+    border: none;
+    color: var(--gray-400);
+    cursor: pointer;
+    font-size: 15px;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .file-item .remove-file:hover { color: var(--red); }
+
+  /* GENERATE BUTTON */
+  .generate-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--blue-accent) 100%);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 14px rgba(11,29,58,0.25);
+    letter-spacing: 0.3px;
+  }
+
+  .generate-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(11,29,58,0.3);
+  }
+
+  .generate-btn:active { transform: translateY(0); }
+
+  .generate-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .generate-btn .spinner {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2.5px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* OUTPUT */
+  .output-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--gray-100);
+    overflow: hidden;
+    margin-top: 16px;
+  }
+
+  .output-header {
+    background: linear-gradient(135deg, var(--navy), var(--navy-light));
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .output-header h3 {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .output-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .output-actions button {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+
+  .output-actions button:hover { background: rgba(255,255,255,0.22); }
+
+  .output-body {
+    padding: 20px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    white-space: pre-wrap;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  /* SETTINGS MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(11,29,58,0.5);
+    z-index: 200;
+    align-items: flex-end;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: var(--white);
+    border-radius: 20px 20px 0 0;
+    width: 100%;
+    max-width: 680px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 24px 20px 40px;
+    animation: slideUp 0.3s ease-out;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .modal-handle {
+    width: 40px;
+    height: 4px;
+    background: var(--gray-200);
+    border-radius: 2px;
+    margin: 0 auto 20px;
+  }
+
+  .modal h2 {
+    font-size: 18px;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .modal .field textarea {
+    min-height: 200px;
+    font-size: 13px;
+  }
+
+  .modal-footer {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .modal-footer button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary { background: var(--gray-100); color: var(--gray-600); }
+  .btn-primary { background: var(--navy); color: var(--white); }
+
+  /* STATUS BAR */
+  .status-bar {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(27,110,194,0.06);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: var(--blue-accent);
+    font-weight: 500;
+  }
+  .status-bar.active { display: flex; }
+  .status-bar.error { background: rgba(229,62,62,0.06); color: var(--red); }
+  .status-bar.success { background: rgba(56,161,105,0.06); color: var(--green); }
+
+  .status-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(27,110,194,0.3);
+    border-top-color: var(--blue-accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+
+  /* PROXY STATUS */
+  .api-key-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--gray-50);
+    border-radius: 8px;
+    margin-bottom: 14px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  .dot-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-indicator.connected { background: var(--green); }
+  .dot-indicator.disconnected { background: var(--orange); }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .container { padding: 12px 10px 100px; }
+    .card { padding: 16px; }
+    .header-title { font-size: 16px; }
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo-mark">C</div>
+    <div>
+      <div class="header-title">Crystaphase</div>
+      <div class="header-subtitle">Call Note Generator</div>
+    </div>
+  </div>
+  <button class="settings-btn" onclick="openSettings()">Settings</button>
+</div>
+
+<!-- MAIN -->
+<div class="container">
+
+  <!-- Proxy Status -->
+  <div class="api-key-display" id="apiStatus">
+    <span class="dot-indicator disconnected" id="apiDot"></span>
+    <span id="apiStatusText">No proxy URL set — tap Settings to configure</span>
+  </div>
+
+  <!-- Report Type -->
+  <div class="card">
+    <div class="card-title">
+      <span class="icon" style="background:rgba(27,110,194,0.1);color:var(--blue-accent);">&#9998;</span>
+      Report Type
+    </div>
+    <div class="toggle-group">
+      <button class="toggle-btn active" data-type="call" onclick="setReportType(this)">Call Note</button>
+      <button class="toggle-btn" data-type="visit" onclick="setReportType(this)">Visit Report</button>
+    </div>
+  </div>
+
+  <!-- ALL INPUTS IN ONE CARD -->
+  <div class="card">
+    <div class="card-title">
+      <span class="icon" style="background:rgba(0,164,166,0.1);color:var(--teal);">&#128172;</span>
+      Notes &amp; Context
+    </div>
+
+    <!-- TEXT -->
+    <div class="field">
+      <label>Your Notes</label>
+      <textarea id="notesText" placeholder="Type or paste your notes here — customer name, unit, what was discussed, products mentioned, action items, opportunity details, dates, anything relevant. Claude will extract and structure everything into a proper call note or visit report."></textarea>
+    </div>
+
+    <!-- AUDIO -->
+    <div class="section-divider">Record Audio</div>
+
+    <div class="audio-row">
+      <button class="record-btn" id="recordBtn" onclick="toggleRecording()">
+        <span class="dot"></span>
+      </button>
+      <div class="audio-info">
+        <div class="label" id="recordLabel">Tap to record a voice memo</div>
+        <div class="sub">Audio will be sent to Claude for processing</div>
+      </div>
+      <div class="record-timer" id="recordTimer">0:00</div>
+    </div>
+    <div class="audio-playback" id="audioPlayback" style="display:none;">
+      <audio id="audioPlayer" controls></audio>
+      <button class="clear-audio-btn" onclick="clearAudio()">Clear</button>
+    </div>
+
+    <!-- FILES -->
+    <div class="section-divider">Upload Files</div>
+
+    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+      <div class="upload-icon">&#128206;</div>
+      <p>Tap to upload or drag files here</p>
+      <p class="hint">Text, PDF, images, documents</p>
+    </div>
+    <input type="file" id="fileInput" multiple style="display:none;" onchange="handleFiles(this.files)">
+    <div class="file-list" id="fileList"></div>
+  </div>
+
+  <!-- Status -->
+  <div class="status-bar" id="statusBar">
+    <span class="status-spinner"></span>
+    <span id="statusText">Generating report...</span>
+  </div>
+
+  <!-- Generate Button -->
+  <button class="generate-btn" id="generateBtn" onclick="generateReport()">
+    Generate Report
+  </button>
+
+  <!-- Output -->
+  <div id="outputSection" style="display:none;">
+    <div class="output-card">
+      <div class="output-header">
+        <h3 id="outputTitle">Call Note</h3>
+        <div class="output-actions">
+          <button onclick="copyOutput()">Copy</button>
+          <button onclick="emailOutput()">Email</button>
+        </div>
+      </div>
+      <div class="output-body" id="outputBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>Settings</h2>
+
+    <div class="field">
+      <label>Proxy URL</label>
+      <input type="url" id="proxyUrlInput" placeholder="https://crystaphase-callnotes.yourname.workers.dev">
+      <p style="font-size:11px;color:var(--gray-400);margin-top:4px;">Your Cloudflare Worker URL. The API key is stored securely on the server.</p>
+    </div>
+
+    <div class="field">
+      <label>Model</label>
+      <select id="modelSelect">
+        <option value="claude-sonnet-4-20250514">Claude Sonnet 4</option>
+        <option value="claude-opus-4-20250514">Claude Opus 4</option>
+        <option value="claude-haiku-3-5-20241022">Claude Haiku 3.5</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>System Prompt (Customize how reports are generated)</label>
+      <textarea id="systemPrompt">You are a technical sales assistant at Crystaphase, a world leader in reactor performance solutions for the hydroprocessing industry. Crystaphase products include CatTrap, ActiPhase, Precision Rings, and HeavyTrap.
+
+Your job is to take raw notes (text, transcribed audio, or file contents) from a sales engineer's customer call or site visit and produce a clean, professional call note or visit report.
+
+You must EXTRACT all relevant details from the raw notes — customer name, unit, author, products, dates, dollar amounts, probabilities, etc. Do not ask for more information; work with what is provided and mark anything missing as "TBD".
+
+FORMAT THE OUTPUT EXACTLY LIKE THIS:
+
+[Call Note] Customer Name - Unit Name
+(or [Visit Report] Customer Name - Unit Name)
+
+[Narrative paragraph(s) describing the interaction — what was discussed, key updates, decisions made, and any relevant technical context. Write in third person. Be concise but thorough.]
+
+[If there are clear action items, list them under "Action Items:"]
+
+Current unit trimester: [value or TBD]
+Products: [value or TBD]
+Opportunity value (unfactored): US $[value or TBD]
+Probability: [value]%
+Opportunity value (factored): US $[calculated as unfactored × probability/100, or TBD]
+On-site date: [value or TBD]
+Occurrence: [Repeat or New]
+
+RULES:
+- Extract ALL structured field values from the raw notes — look for any mention of dollar amounts, percentages, dates, product names, customer names, unit identifiers
+- Write in a professional but conversational tone
+- Preserve all technical details, product names, customer names, and dollar amounts exactly as provided
+- Calculate the factored opportunity value as unfactored × (probability / 100)
+- Keep the narrative concise — typically 1-3 paragraphs
+- Highlight any wins, competitive threats, or urgent action items
+- Use the author's perspective (third person)
+- Crystaphase products: CatTrap, ActiPhase, Precision Rings, HeavyTrap, HT10, PS66, PS99, DOS, TRANS
+- If the raw notes mention a competitor or lost opportunity, note it clearly</textarea>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeSettings()">Cancel</button>
+      <button class="btn-primary" onclick="saveSettings()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ============ STATE ============
+  let reportType = 'call';
+  let mediaRecorder = null;
+  let audioChunks = [];
+  let audioBlob = null;
+  let recordingInterval = null;
+  let recordingSeconds = 0;
+  let uploadedFiles = [];
+
+  // ============ INIT ============
+  document.addEventListener('DOMContentLoaded', () => {
+    loadSettings();
+    const dz = document.getElementById('dropZone');
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+    dz.addEventListener('drop', e => {
+      e.preventDefault();
+      dz.classList.remove('drag-over');
+      handleFiles(e.dataTransfer.files);
+    });
+  });
+
+  // ============ SETTINGS ============
+  function loadSettings() {
+    const proxyUrl = localStorage.getItem('cp_proxy_url') || '';
+    const model = localStorage.getItem('cp_model') || 'claude-sonnet-4-20250514';
+    const prompt = localStorage.getItem('cp_system_prompt');
+    document.getElementById('proxyUrlInput').value = proxyUrl;
+    document.getElementById('modelSelect').value = model;
+    if (prompt) document.getElementById('systemPrompt').value = prompt;
+    updateProxyStatus(proxyUrl);
+  }
+
+  function saveSettings() {
+    const proxyUrl = document.getElementById('proxyUrlInput').value.trim();
+    const model = document.getElementById('modelSelect').value;
+    const prompt = document.getElementById('systemPrompt').value;
+    localStorage.setItem('cp_proxy_url', proxyUrl);
+    localStorage.setItem('cp_model', model);
+    localStorage.setItem('cp_system_prompt', prompt);
+    updateProxyStatus(proxyUrl);
+    closeSettings();
+  }
+
+  function updateProxyStatus(url) {
+    const dot = document.getElementById('apiDot');
+    const text = document.getElementById('apiStatusText');
+    if (url && url.startsWith('https://')) {
+      dot.className = 'dot-indicator connected';
+      text.textContent = 'Proxy connected — ' + new URL(url).hostname;
+    } else {
+      dot.className = 'dot-indicator disconnected';
+      text.textContent = 'No proxy URL set — tap Settings to configure';
+    }
+  }
+
+  function openSettings() { document.getElementById('settingsModal').classList.add('active'); }
+  function closeSettings() { document.getElementById('settingsModal').classList.remove('active'); }
+  document.addEventListener('click', e => { if (e.target.id === 'settingsModal') closeSettings(); });
+
+  // ============ REPORT TYPE ============
+  function setReportType(btn) {
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    reportType = btn.dataset.type;
+  }
+
+  // ============ AUDIO ============
+  async function toggleRecording() {
+    const btn = document.getElementById('recordBtn');
+    const label = document.getElementById('recordLabel');
+
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+      mediaRecorder.stop();
+      btn.classList.remove('recording');
+      label.textContent = 'Recording saved';
+      clearInterval(recordingInterval);
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioChunks = [];
+      mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+      mediaRecorder.onstop = () => {
+        audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        const url = URL.createObjectURL(audioBlob);
+        document.getElementById('audioPlayer').src = url;
+        document.getElementById('audioPlayback').style.display = 'flex';
+        stream.getTracks().forEach(t => t.stop());
+      };
+      mediaRecorder.start();
+      btn.classList.add('recording');
+      label.textContent = 'Recording... tap to stop';
+      recordingSeconds = 0;
+      updateTimer();
+      recordingInterval = setInterval(() => { recordingSeconds++; updateTimer(); }, 1000);
+    } catch (err) {
+      label.textContent = 'Microphone access denied';
+    }
+  }
+
+  function updateTimer() {
+    const m = Math.floor(recordingSeconds / 60);
+    const s = recordingSeconds % 60;
+    document.getElementById('recordTimer').textContent = m + ':' + String(s).padStart(2, '0');
+  }
+
+  function clearAudio() {
+    audioBlob = null;
+    audioChunks = [];
+    document.getElementById('audioPlayback').style.display = 'none';
+    document.getElementById('recordTimer').textContent = '0:00';
+    document.getElementById('recordLabel').textContent = 'Tap to record a voice memo';
+  }
+
+  // ============ FILES ============
+  function handleFiles(files) {
+    for (const file of files) uploadedFiles.push(file);
+    renderFileList();
+  }
+
+  function removeFile(index) {
+    uploadedFiles.splice(index, 1);
+    renderFileList();
+  }
+
+  function renderFileList() {
+    const list = document.getElementById('fileList');
+    list.innerHTML = '';
+    uploadedFiles.forEach((f, i) => {
+      const size = f.size < 1024 ? f.size + ' B' :
+                   f.size < 1048576 ? (f.size / 1024).toFixed(1) + ' KB' :
+                   (f.size / 1048576).toFixed(1) + ' MB';
+      list.innerHTML += `<div class="file-item">
+        <span class="name">${f.name}</span>
+        <span class="meta"><span class="size">${size}</span>
+        <button class="remove-file" onclick="removeFile(${i})">&#10005;</button></span>
+      </div>`;
+    });
+  }
+
+  // ============ GENERATE ============
+  async function generateReport() {
+    const proxyUrl = localStorage.getItem('cp_proxy_url');
+    if (!proxyUrl) { openSettings(); return; }
+
+    const notesText = document.getElementById('notesText').value.trim();
+    if (!notesText && !audioBlob && uploadedFiles.length === 0) {
+      alert('Please add some notes, record audio, or upload files before generating.');
+      return;
+    }
+
+    const btn = document.getElementById('generateBtn');
+    const status = document.getElementById('statusBar');
+    const statusText = document.getElementById('statusText');
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Generating...';
+    status.className = 'status-bar active';
+    statusText.textContent = 'Preparing your notes...';
+
+    try {
+      let contentBlocks = [];
+      const typeLabel = reportType === 'call' ? 'Call Note' : 'Visit Report';
+
+      // Main instruction + text notes
+      let mainText = `Generate a ${typeLabel} from the following raw input.\n\n`;
+      if (notesText) {
+        mainText += `--- RAW NOTES ---\n${notesText}\n\n`;
+      }
+      contentBlocks.push({ type: 'text', text: mainText });
+
+      // Audio note
+      if (audioBlob) {
+        statusText.textContent = 'Processing audio...';
+        contentBlocks.push({
+          type: 'text',
+          text: '--- AUDIO NOTE ---\nAn audio recording was attached. Note: The Claude Messages API cannot directly process audio. Please work with the text notes and file contents provided. If the user typed a transcript or summary alongside the audio, use that.\n'
+        });
+      }
+
+      // Files
+      if (uploadedFiles.length > 0) {
+        statusText.textContent = 'Processing files...';
+        for (const file of uploadedFiles) {
+          if (file.type.startsWith('image/')) {
+            const base64 = await fileToBase64(file);
+            contentBlocks.push({
+              type: 'image',
+              source: { type: 'base64', media_type: file.type, data: base64 }
+            });
+            contentBlocks.push({ type: 'text', text: `(Image: ${file.name} — extract any visible text, notes, or data from this image)` });
+          } else {
+            const text = await readFileAsText(file);
+            contentBlocks.push({ type: 'text', text: `--- FILE: ${file.name} ---\n${text}\n` });
+          }
+        }
+      }
+
+      // Call Claude API
+      statusText.textContent = 'Claude is generating your report...';
+      const model = localStorage.getItem('cp_model') || 'claude-sonnet-4-20250514';
+      const systemPrompt = localStorage.getItem('cp_system_prompt') || document.getElementById('systemPrompt').value;
+
+      const response = await fetch(proxyUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: model,
+          max_tokens: 2048,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: contentBlocks }]
+        })
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error?.message || `API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const output = data.content?.[0]?.text || 'No response generated.';
+
+      // Show output
+      document.getElementById('outputSection').style.display = 'block';
+      document.getElementById('outputTitle').textContent = typeLabel;
+      document.getElementById('outputBody').textContent = output;
+
+      status.className = 'status-bar active success';
+      statusText.textContent = 'Report generated successfully!';
+      setTimeout(() => { status.className = 'status-bar'; }, 3000);
+
+      document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    } catch (err) {
+      status.className = 'status-bar active error';
+      statusText.textContent = 'Error: ' + err.message;
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = 'Generate Report';
+    }
+  }
+
+  // ============ OUTPUT ACTIONS ============
+  function copyOutput() {
+    const text = document.getElementById('outputBody').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const btns = document.querySelectorAll('.output-actions button');
+      btns[0].textContent = 'Copied!';
+      setTimeout(() => btns[0].textContent = 'Copy', 1500);
+    });
+  }
+
+  function emailOutput() {
+    const text = document.getElementById('outputBody').textContent;
+    // Try to extract subject line from the output
+    const firstLine = text.split('\n')[0].trim();
+    const subject = encodeURIComponent(firstLine.startsWith('[') ? firstLine : `[${reportType === 'call' ? 'Call Note' : 'Visit Report'}]`);
+    const body = encodeURIComponent(text);
+    window.location.href = `mailto:callreports@crystaphase.onmicrosoft.com?subject=${subject}&body=${body}`;
+  }
+
+  // ============ UTILS ============
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function readFileAsText(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsText(file);
+    });
+  }
+</script>
+
+</body>
+</html>
