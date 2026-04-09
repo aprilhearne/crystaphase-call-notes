@@ -26,7 +26,6 @@
     --shadow-lg: 0 16px 48px rgba(0, 78, 60, 0.18);
     --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --radius: 12px;
-    --red: #E53E3E;
   }
 
   body {
@@ -165,6 +164,7 @@
 
   /* ── FORM FIELDS ── */
   .field { margin-bottom: 16px; }
+  .field:last-child { margin-bottom: 0; }
 
   .field label {
     display: block;
@@ -176,7 +176,7 @@
     letter-spacing: 1px;
   }
 
-  .field input, .field select, .field textarea {
+  .field textarea {
     width: 100%;
     padding: 12px 16px;
     border: 2px solid var(--neutral-light);
@@ -187,37 +187,29 @@
     background: var(--bg-card);
     transition: border-color var(--transition), box-shadow var(--transition);
     -webkit-appearance: none;
+    resize: vertical;
+    line-height: 1.7;
   }
 
-  .field input:focus, .field select:focus, .field textarea:focus {
+  .field textarea:focus {
     outline: none;
     border-color: var(--brand-green);
     box-shadow: 0 0 0 4px rgba(80, 191, 161, 0.15);
   }
 
-  .field textarea {
-    min-height: 180px;
-    resize: vertical;
-    line-height: 1.7;
+  .field textarea.notes-input {
+    min-height: 150px;
   }
 
-  /* ── SECTION DIVIDER ── */
-  .section-divider {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 8px 0 16px;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--neutral-light);
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
+  .field textarea.section-output {
+    min-height: 80px;
+    background: var(--neutral-lightest);
+    font-size: 13px;
+    color: var(--text-secondary);
   }
-  .section-divider::before, .section-divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--neutral-light);
+
+  .field textarea.section-output:not(:placeholder-shown) {
+    color: var(--text-primary);
   }
 
   /* ── AUDIO RECORDER ── */
@@ -230,6 +222,7 @@
     border-radius: 10px;
     border: 2px solid transparent;
     transition: border-color var(--transition);
+    margin-bottom: 12px;
   }
 
   .audio-row:has(.record-btn.recording) {
@@ -250,9 +243,7 @@
     flex-shrink: 0;
   }
 
-  .record-btn:hover {
-    border-color: var(--brand-coral);
-  }
+  .record-btn:hover { border-color: var(--brand-coral); }
 
   .record-btn .dot {
     width: 20px;
@@ -301,7 +292,7 @@
   }
 
   .audio-playback {
-    margin-top: 10px;
+    margin-bottom: 12px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -324,7 +315,7 @@
   }
   .clear-audio-btn:hover { background: rgba(216, 107, 85, 0.08); }
 
-  /* ── FILE UPLOAD ── */
+  /* ── IMAGE / HANDWRITING UPLOAD ── */
   .drop-zone {
     border: 2px dashed var(--neutral-light);
     border-radius: 10px;
@@ -333,6 +324,7 @@
     cursor: pointer;
     transition: all var(--transition);
     background: var(--neutral-lightest);
+    margin-bottom: 12px;
   }
 
   .drop-zone:hover, .drop-zone.drag-over {
@@ -354,8 +346,78 @@
     margin-top: 4px;
   }
 
+  /* ── IMAGE PREVIEW ── */
+  .image-preview {
+    margin-bottom: 12px;
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--neutral-lightest);
+  }
+
+  .image-preview img {
+    width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+    display: block;
+  }
+
+  .image-preview-actions {
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+    background: rgba(0,0,0,0.03);
+  }
+
+  .extract-btn {
+    flex: 1;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, var(--brand-green-dark), var(--brand-green));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--transition);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .extract-btn:hover { opacity: 0.9; }
+  .extract-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .extract-btn .spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+
+  .clear-image-btn {
+    padding: 10px 16px;
+    background: none;
+    border: 2px solid var(--neutral-light);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition);
+  }
+
+  .clear-image-btn:hover { border-color: var(--brand-coral); color: var(--brand-coral); }
+
+  /* ── FILE LIST ── */
   .file-list {
-    margin-top: 8px;
+    margin-bottom: 12px;
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -577,29 +639,30 @@
     </div>
   </div>
 
-  <!-- ALL INPUTS IN ONE CARD -->
+  <!-- CARD 1: Typed Notes -->
   <div class="card">
     <div class="card-title">
-      <span class="icon" style="background:rgba(80,191,161,0.1);color:var(--brand-green);">&#128172;</span>
-      Notes &amp; Context
+      <span class="icon" style="background:rgba(80,191,161,0.1);color:var(--brand-green);">&#128221;</span>
+      Typed Notes
     </div>
-
-    <!-- TEXT -->
     <div class="field">
-      <label>Your Notes</label>
-      <textarea id="notesText" placeholder="Type or paste your notes here — customer name, unit, what was discussed, products mentioned, action items, opportunity details, dates, anything relevant. Claude will extract and structure everything into a proper call note or visit report."></textarea>
+      <textarea id="notesText" class="notes-input" placeholder="Type or paste your notes — customer name, unit, what was discussed, products mentioned, action items, anything relevant."></textarea>
     </div>
+  </div>
 
-    <!-- AUDIO -->
-    <div class="section-divider">Record Audio</div>
-
+  <!-- CARD 2: Voice Memo -->
+  <div class="card">
+    <div class="card-title">
+      <span class="icon" style="background:rgba(216,107,85,0.1);color:var(--brand-coral);">&#127908;</span>
+      Voice Memo
+    </div>
     <div class="audio-row">
       <button class="record-btn" id="recordBtn" onclick="toggleRecording()">
         <span class="dot"></span>
       </button>
       <div class="audio-info">
         <div class="label" id="recordLabel">Tap to record a voice memo</div>
-        <div class="sub">Voice will be transcribed and added to your notes</div>
+        <div class="sub">Voice will be transcribed live</div>
       </div>
       <div class="record-timer" id="recordTimer">0:00</div>
     </div>
@@ -607,17 +670,54 @@
       <audio id="audioPlayer" controls></audio>
       <button class="clear-audio-btn" onclick="clearAudio()">Clear</button>
     </div>
+    <div class="field">
+      <label>Transcript</label>
+      <textarea id="voiceText" class="section-output" placeholder="Your voice transcript will appear here. You can edit it before generating."></textarea>
+    </div>
+  </div>
 
-    <!-- FILES -->
-    <div class="section-divider">Upload Files</div>
+  <!-- CARD 3: Handwriting / Photo Notes -->
+  <div class="card">
+    <div class="card-title">
+      <span class="icon" style="background:rgba(239,187,101,0.1);color:var(--brand-gold);">&#128247;</span>
+      Photo Notes
+    </div>
+    <div id="imageDropZone" class="drop-zone" onclick="document.getElementById('imageInput').click()">
+      <div class="upload-icon">&#128248;</div>
+      <p>Upload a photo of handwritten notes</p>
+      <p class="hint">JPG, PNG, HEIC — we'll extract the text</p>
+    </div>
+    <input type="file" id="imageInput" accept="image/*" style="display:none;" onchange="handleImageUpload(this.files[0])">
+    <div id="imagePreview" class="image-preview" style="display:none;">
+      <img id="imagePreviewImg" alt="Uploaded notes">
+      <div class="image-preview-actions">
+        <button class="extract-btn" id="extractBtn" onclick="extractHandwriting()">Extract Text</button>
+        <button class="clear-image-btn" onclick="clearImage()">Remove</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Extracted Text</label>
+      <textarea id="handwritingText" class="section-output" placeholder="Extracted text from your photo will appear here. You can edit it before generating."></textarea>
+    </div>
+  </div>
 
-    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-      <div class="upload-icon">&#128206;</div>
-      <p>Tap to upload or drag files here</p>
-      <p class="hint">Text, PDF, images, documents</p>
+  <!-- CARD 4: File Upload -->
+  <div class="card">
+    <div class="card-title">
+      <span class="icon" style="background:rgba(15,102,148,0.1);color:var(--brand-blue);">&#128206;</span>
+      File Upload
+    </div>
+    <div id="fileDropZone" class="drop-zone" onclick="document.getElementById('fileInput').click()">
+      <div class="upload-icon">&#128196;</div>
+      <p>Upload text files, PDFs, or documents</p>
+      <p class="hint">We'll extract the contents</p>
     </div>
     <input type="file" id="fileInput" multiple style="display:none;" onchange="handleFiles(this.files)">
     <div class="file-list" id="fileList"></div>
+    <div class="field">
+      <label>File Contents</label>
+      <textarea id="fileText" class="section-output" placeholder="Extracted file contents will appear here. You can edit before generating."></textarea>
+    </div>
   </div>
 
   <!-- Status -->
@@ -684,16 +784,30 @@ RULES:
   let speechRecognition = null;
   let transcriptText = '';
   let uploadedFiles = [];
+  let uploadedImage = null;
+  let uploadedImageBase64 = null;
 
   // ============ INIT ============
   document.addEventListener('DOMContentLoaded', () => {
-    const dz = document.getElementById('dropZone');
-    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
-    dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
-    dz.addEventListener('drop', e => {
+    // File drop zone
+    const fdz = document.getElementById('fileDropZone');
+    fdz.addEventListener('dragover', e => { e.preventDefault(); fdz.classList.add('drag-over'); });
+    fdz.addEventListener('dragleave', () => fdz.classList.remove('drag-over'));
+    fdz.addEventListener('drop', e => {
       e.preventDefault();
-      dz.classList.remove('drag-over');
+      fdz.classList.remove('drag-over');
       handleFiles(e.dataTransfer.files);
+    });
+
+    // Image drop zone
+    const idz = document.getElementById('imageDropZone');
+    idz.addEventListener('dragover', e => { e.preventDefault(); idz.classList.add('drag-over'); });
+    idz.addEventListener('dragleave', () => idz.classList.remove('drag-over'));
+    idz.addEventListener('drop', e => {
+      e.preventDefault();
+      idz.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) handleImageUpload(file);
     });
   });
 
@@ -714,22 +828,18 @@ RULES:
       if (speechRecognition) speechRecognition.stop();
       btn.classList.remove('recording');
       clearInterval(recordingInterval);
-      // Append transcript to notes field
       if (transcriptText.trim()) {
-        const notes = document.getElementById('notesText');
-        const separator = notes.value.trim() ? '\n\n--- VOICE MEMO TRANSCRIPT ---\n' : '';
-        notes.value += separator + transcriptText.trim();
-        label.textContent = 'Transcript added to notes';
+        document.getElementById('voiceText').value = transcriptText.trim();
+        label.textContent = 'Transcript ready — edit below if needed';
       } else {
         label.textContent = 'No speech detected — try again';
       }
       return;
     }
 
-    // Check for Speech Recognition support
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      label.textContent = 'Speech recognition not supported in this browser. Use Chrome or Safari.';
+      label.textContent = 'Speech recognition not supported. Use Chrome or Safari.';
       return;
     }
 
@@ -738,7 +848,6 @@ RULES:
       audioChunks = [];
       transcriptText = '';
 
-      // Set up speech recognition
       speechRecognition = new SpeechRecognition();
       speechRecognition.continuous = true;
       speechRecognition.interimResults = true;
@@ -756,6 +865,7 @@ RULES:
         }
         transcriptText = finalTranscript + interim;
         label.textContent = transcriptText.slice(-60) || 'Listening...';
+        document.getElementById('voiceText').value = transcriptText;
       };
 
       speechRecognition.onerror = (event) => {
@@ -765,7 +875,6 @@ RULES:
       };
 
       speechRecognition.onend = () => {
-        // Restart if still recording (speech recognition auto-stops)
         if (mediaRecorder && mediaRecorder.state === 'recording') {
           try { speechRecognition.start(); } catch(e) {}
         }
@@ -773,7 +882,6 @@ RULES:
 
       speechRecognition.start();
 
-      // Set up media recorder (for playback)
       mediaRecorder = new MediaRecorder(stream);
       mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
       mediaRecorder.onstop = () => {
@@ -803,20 +911,95 @@ RULES:
   function clearAudio() {
     audioBlob = null;
     audioChunks = [];
+    transcriptText = '';
     document.getElementById('audioPlayback').style.display = 'none';
     document.getElementById('recordTimer').textContent = '0:00';
     document.getElementById('recordLabel').textContent = 'Tap to record a voice memo';
+    document.getElementById('voiceText').value = '';
+  }
+
+  // ============ HANDWRITING / PHOTO NOTES ============
+  function handleImageUpload(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    uploadedImage = file;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      uploadedImageBase64 = e.target.result.split(',')[1];
+      document.getElementById('imagePreviewImg').src = e.target.result;
+      document.getElementById('imagePreview').style.display = 'block';
+      document.getElementById('imageDropZone').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function extractHandwriting() {
+    if (!uploadedImageBase64 || !uploadedImage) return;
+
+    const btn = document.getElementById('extractBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Extracting...';
+
+    try {
+      const response = await fetch(PROXY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: MODEL,
+          max_tokens: 2048,
+          system: 'You extract text from images of handwritten notes. Return ONLY the extracted text, exactly as written. Preserve line breaks and structure. Do not add commentary, headers, or formatting — just the raw text.',
+          messages: [{
+            role: 'user',
+            content: [
+              {
+                type: 'image',
+                source: { type: 'base64', media_type: uploadedImage.type, data: uploadedImageBase64 }
+              },
+              { type: 'text', text: 'Extract all the handwritten text from this image.' }
+            ]
+          }]
+        })
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error?.message || `API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const extracted = data.content?.[0]?.text || '';
+      document.getElementById('handwritingText').value = extracted;
+    } catch (err) {
+      document.getElementById('handwritingText').value = 'Error extracting text: ' + err.message;
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = 'Extract Text';
+    }
+  }
+
+  function clearImage() {
+    uploadedImage = null;
+    uploadedImageBase64 = null;
+    document.getElementById('imagePreview').style.display = 'none';
+    document.getElementById('imageDropZone').style.display = 'block';
+    document.getElementById('handwritingText').value = '';
   }
 
   // ============ FILES ============
   function handleFiles(files) {
-    for (const file of files) uploadedFiles.push(file);
+    for (const file of files) {
+      if (!file.type.startsWith('image/')) {
+        uploadedFiles.push(file);
+      }
+    }
     renderFileList();
+    extractFileContents();
   }
 
   function removeFile(index) {
     uploadedFiles.splice(index, 1);
     renderFileList();
+    extractFileContents();
   }
 
   function renderFileList() {
@@ -834,11 +1017,34 @@ RULES:
     });
   }
 
+  async function extractFileContents() {
+    if (uploadedFiles.length === 0) {
+      document.getElementById('fileText').value = '';
+      return;
+    }
+    let combined = '';
+    for (const file of uploadedFiles) {
+      try {
+        const text = await readFileAsText(file);
+        combined += `--- ${file.name} ---\n${text}\n\n`;
+      } catch (e) {
+        combined += `--- ${file.name} ---\n(Could not read file)\n\n`;
+      }
+    }
+    document.getElementById('fileText').value = combined.trim();
+  }
+
   // ============ GENERATE ============
   async function generateReport() {
-    const notesText = document.getElementById('notesText').value.trim();
-    if (!notesText && !audioBlob && uploadedFiles.length === 0) {
-      alert('Please add some notes, record audio, or upload files before generating.');
+    const sections = [
+      document.getElementById('notesText').value.trim(),
+      document.getElementById('voiceText').value.trim(),
+      document.getElementById('handwritingText').value.trim(),
+      document.getElementById('fileText').value.trim(),
+    ].filter(t => t);
+
+    if (sections.length === 0) {
+      alert('Please add some notes in at least one section before generating.');
       return;
     }
 
@@ -849,50 +1055,23 @@ RULES:
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Generating...';
     status.className = 'status-bar active';
-    statusText.textContent = 'Preparing your notes...';
+    statusText.textContent = 'Claude is generating your report...';
 
     try {
-      let contentBlocks = [];
       const typeLabel = reportType === 'call' ? 'Call Note' : 'Visit Report';
-
-      // Main instruction + text notes
-      let mainText = `Generate a ${typeLabel} from the following raw input.\n\n`;
-      if (notesText) {
-        mainText += `--- RAW NOTES ---\n${notesText}\n\n`;
-      }
-      contentBlocks.push({ type: 'text', text: mainText });
-
-      // Files
-      if (uploadedFiles.length > 0) {
-        statusText.textContent = 'Processing files...';
-        for (const file of uploadedFiles) {
-          if (file.type.startsWith('image/')) {
-            const base64 = await fileToBase64(file);
-            contentBlocks.push({
-              type: 'image',
-              source: { type: 'base64', media_type: file.type, data: base64 }
-            });
-            contentBlocks.push({ type: 'text', text: `(Image: ${file.name} — extract any visible text, notes, or data from this image)` });
-          } else {
-            const text = await readFileAsText(file);
-            contentBlocks.push({ type: 'text', text: `--- FILE: ${file.name} ---\n${text}\n` });
-          }
-        }
-      }
-
-      // Call proxy
-      statusText.textContent = 'Claude is generating your report...';
+      const combinedNotes = sections.join('\n\n---\n\n');
 
       const response = await fetch(PROXY_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: MODEL,
           max_tokens: 2048,
           system: SYSTEM_PROMPT,
-          messages: [{ role: 'user', content: contentBlocks }]
+          messages: [{
+            role: 'user',
+            content: `Generate a ${typeLabel} from the following raw input.\n\n${combinedNotes}`
+          }]
         })
       });
 
@@ -904,7 +1083,6 @@ RULES:
       const data = await response.json();
       const output = data.content?.[0]?.text || 'No response generated.';
 
-      // Show output
       document.getElementById('outputSection').style.display = 'block';
       document.getElementById('outputTitle').textContent = typeLabel;
       document.getElementById('outputBody').textContent = output;
